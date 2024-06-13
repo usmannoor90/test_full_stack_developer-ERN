@@ -1,35 +1,30 @@
 import React from "react";
 
-export default function Refecto({ data }) {
-  //   console.log(data);
+export default function Refacto({ data }) {
   const recur = (data) => {
-    Object.keys(data).forEach((value, index) => {
-      //   console.log(data[value]);
-      if (Array.isArray(data[value])) {
-        data[value]?.map((item, i) => {
-          Object.keys(item).forEach((v) => {
-            return (
-              <pre>
-                {v}:{item[v]}
-              </pre>
-            );
-          });
-        });
-      } else {
-        Object.keys(data).forEach((v) => {
-          return (
-            <pre>
-              {v}:{data[v]}
-            </pre>
-          );
-        });
+    if (typeof data === "string") {
+      try {
+        const parsedData = JSON.parse(data);
+        return recur(parsedData);
+      } catch (e) {
+        return data;
       }
-    });
+    } else if (typeof data === "object" && data !== null) {
+      return (
+        <div>
+          {Array.isArray(data)
+            ? data.map((item, index) => <div key={index}>{recur(item)}</div>)
+            : Object.keys(data).map((key, index) => (
+                <div key={index}>
+                  <strong>{key}:</strong> {recur(data[key])}
+                </div>
+              ))}
+        </div>
+      );
+    } else {
+      return data;
+    }
   };
 
-  return (
-    <div className="code-block">
-      <span>{recur(data)}</span>
-    </div>
-  );
+  return <div className="code-block">{recur(data)}</div>;
 }
